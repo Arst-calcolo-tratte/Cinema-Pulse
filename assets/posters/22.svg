@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2b1655"/><stop offset=".55" stop-color="#151322"/><stop offset="1" stop-color="#0b0b18"/></linearGradient><radialGradient id="r" cx="30%" cy="20%"><stop stop-color="#ffffff" stop-opacity=".25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#12345a"/><stop offset=".55" stop-color="#151322"/><stop offset="1" stop-color="#0a0b18"/></linearGradient><radialGradient id="r" cx="30%" cy="20%"><stop stop-color="#ffffff" stop-opacity=".25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs>
 <rect width="600" height="900" fill="url(#g)"/><circle cx="110" cy="150" r="180" fill="url(#r)"/><circle cx="480" cy="650" r="210" fill="none" stroke="#a96cff" stroke-opacity=".22" stroke-width="3"/><circle cx="480" cy="650" r="155" fill="none" stroke="#ffd36a" stroke-opacity=".14" stroke-width="2"/>
 <path d="M0 730 Q160 620 300 735 T600 700 V900 H0Z" fill="#05050c" opacity=".55"/>
 <text x="42" y="70" fill="#d7b9ff" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="3">CINEMA PULSE</text>
-<text x="300" y="390" text-anchor="middle" class="title">Dune: Parte Due</text>
-<text x="300" y="575" text-anchor="middle" fill="#d9d4e4" font-family="Arial,sans-serif" font-size="22" font-weight="600">FILM · 2024</text>
+<text x="300" y="390" text-anchor="middle" class="title">Arcane</text>
+<text x="300" y="575" text-anchor="middle" fill="#d9d4e4" font-family="Arial,sans-serif" font-size="22" font-weight="600">SERIE TV · 2021</text>
 <circle cx="300" cy="665" r="46" fill="#080812" stroke="#b37cff" stroke-width="5"/><path d="M286 640v50l43-25z" fill="#ffd36a"/>
 <text x="300" y="785" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="18" letter-spacing="4">SCOPRI · SCEGLI · GUARDA</text>
 </svg>
