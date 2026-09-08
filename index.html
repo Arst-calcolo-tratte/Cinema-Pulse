@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090914"><meta name="description" content="Cinema Pulse — novità, classifiche e disponibilità streaming in un'unica web app privata.">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><title>Cinema Pulse</title>
+</head>
+<body>
+<div id="app">
+<header class="topbar glass">
+  <button class="brand" data-nav="home" aria-label="Home"><span class="brand-mark">C<span>▶</span></span><span><b>CINEMA</b><strong>PULSE</strong></span></button>
+  <div class="top-actions"><span id="lastUpdated" class="updated">Aggiornato —</span><button id="refreshBtn" class="icon-btn glow" title="Aggiorna">↻<span>Aggiorna</span></button></div>
+</header>
+<main>
+<section id="view-home" class="view active"></section>
+<section id="view-ranking" class="view"></section>
+<section id="view-search" class="view"></section>
+<section id="view-list" class="view"></section>
+<section id="view-settings" class="view"></section>
+<section id="view-detail" class="view"></section>
+</main>
+<nav class="bottom-nav glass" aria-label="Navigazione">
+ <button data-nav="home" class="nav-item active"><span>⌂</span>Home</button>
+ <button data-nav="ranking" class="nav-item"><span>✦</span>Classifica</button>
+ <button data-nav="search" class="nav-item"><span>⌕</span>Cerca</button>
+ <button data-nav="list" class="nav-item"><span>♡</span>La mia lista</button>
+ <button data-nav="settings" class="nav-item"><span>⚙</span>Impostazioni</button>
+</nav>
+<div id="toast" class="toast"></div>
+<div id="modal" class="modal" aria-hidden="true"><div class="modal-card glass"><button id="closeModal" class="close">×</button><div id="modalContent"></div></div></div>
+</div>
+<script src="app.js"></script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body></html>
