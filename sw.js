@@ -3,7 +3,7 @@
    così un aggiornamento pubblicato arriva davvero sul telefono.
    Solo le immagini e i font restano in cache, perché non cambiano mai. */
 
-const VERSION = '3.0.0';
+const VERSION = '3.1.0';
 const SHELL = 'cp-shell-' + VERSION;
 const MEDIA = 'cp-media-v3';
 

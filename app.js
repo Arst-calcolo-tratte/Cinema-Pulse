@@ -123,6 +123,9 @@ const ago = n => iso(new Date(Date.now() - n*864e5));
 function shape(r, kind, gmap){
   const date = r.release_date || r.first_air_date || '';
   if (!date) return null;
+  // TMDB restituisce la trama vuota quando non esiste la traduzione italiana
+  const overview = (r.overview || '').trim();
+  if (S.prefs.soloItaliano && !overview) return null;
   const v = r.vote_average || 0, n = r.vote_count || 0;
   const fresh = (Date.now() - new Date(date)) / 864e5 <= 120;
   const pulse = Math.max(0, Math.min(10, v*0.9 + Math.min(n/2500,1)*0.7 + (fresh?0.4:0)));
@@ -135,7 +138,7 @@ function shape(r, kind, gmap){
     runtime: '',
     imdb: v, votes: n, ratingLabel: 'TMDB',
     pulse: +pulse.toFixed(1),
-    plot: r.overview || 'Trama non ancora disponibile in italiano.',
+    plot: overview || 'Trama non ancora disponibile in italiano.',
     poster: r.poster_path ? IMG + 'w500' + r.poster_path : null,
     wide:   r.backdrop_path ? IMG + 'w780' + r.backdrop_path : null
   };
@@ -144,17 +147,24 @@ function shape(r, kind, gmap){
 async function buildCatalog(onStep){
   const gmap = await loadGenres();
   const since = ago(150), until = iso(new Date());
+  // disponibilità in Italia: TMDB filtra solo se si dice anche in che modo si guarda
+  const geo = S.prefs.soloIT
+    ? { watch_region:'IT', with_watch_monetization_types:'flatrate|free|ads|rent|buy' }
+    : {};
+  const geoFilm = S.prefs.soloIT ? { ...geo, region:'IT' } : {};
+
   const jobs = [
     // le uscite recenti, ma solo quelle che hanno già voti buoni
-    ['/discover/movie','film',{sort_by:'primary_release_date.desc','primary_release_date.gte':since,'primary_release_date.lte':until,'vote_count.gte':60,'vote_average.gte':6.5,watch_region:'IT',include_adult:'false',page:'1'}],
-    ['/discover/movie','film',{sort_by:'primary_release_date.desc','primary_release_date.gte':since,'primary_release_date.lte':until,'vote_count.gte':60,'vote_average.gte':6.5,watch_region:'IT',include_adult:'false',page:'2'}],
-    ['/discover/tv','serie',{sort_by:'first_air_date.desc','first_air_date.gte':since,'first_air_date.lte':until,'vote_count.gte':30,'vote_average.gte':6.8,watch_region:'IT',page:'1'}],
+    ['/discover/movie','film',{...geoFilm, sort_by:'primary_release_date.desc','primary_release_date.gte':since,'primary_release_date.lte':until,'vote_count.gte':60,'vote_average.gte':6.5,include_adult:'false',page:'1'}],
+    ['/discover/movie','film',{...geoFilm, sort_by:'primary_release_date.desc','primary_release_date.gte':since,'primary_release_date.lte':until,'vote_count.gte':60,'vote_average.gte':6.5,include_adult:'false',page:'2'}],
+    ['/discover/tv','serie',{...geo, sort_by:'first_air_date.desc','first_air_date.gte':since,'first_air_date.lte':until,'vote_count.gte':30,'vote_average.gte':6.8,page:'1'}],
     // il meglio degli ultimi anni, per l'archivio
-    ['/discover/movie','film',{sort_by:'vote_average.desc','vote_count.gte':1200,'primary_release_date.gte':ago(365*8),without_genres:'99,10755',include_adult:'false',page:'1'}],
-    ['/discover/movie','film',{sort_by:'vote_average.desc','vote_count.gte':1200,'primary_release_date.gte':ago(365*8),without_genres:'99,10755',include_adult:'false',page:'2'}],
-    ['/discover/tv','serie',{sort_by:'vote_average.desc','vote_count.gte':400,'first_air_date.gte':ago(365*8),without_genres:'99,10764',page:'1'}],
-    ['/discover/tv','serie',{sort_by:'vote_average.desc','vote_count.gte':400,'first_air_date.gte':ago(365*8),without_genres:'99,10764',page:'2'}]
+    ['/discover/movie','film',{...geoFilm, sort_by:'vote_average.desc','vote_count.gte':1200,'primary_release_date.gte':ago(365*8),without_genres:'99,10755',include_adult:'false',page:'1'}],
+    ['/discover/movie','film',{...geoFilm, sort_by:'vote_average.desc','vote_count.gte':1200,'primary_release_date.gte':ago(365*8),without_genres:'99,10755',include_adult:'false',page:'2'}],
+    ['/discover/tv','serie',{...geo, sort_by:'vote_average.desc','vote_count.gte':400,'first_air_date.gte':ago(365*8),without_genres:'99,10764',page:'1'}],
+    ['/discover/tv','serie',{...geo, sort_by:'vote_average.desc','vote_count.gte':400,'first_air_date.gte':ago(365*8),without_genres:'99,10764',page:'2'}]
   ];
+
   const out = new Map();
   let done = 0;
   for (const [path, kind, params] of jobs){
@@ -190,6 +200,8 @@ const S = {
   from:'home'
 };
 if (!S.prefs.tmdb) S.prefs.tmdb = DEFAULT_KEY;
+if (S.prefs.soloIT === undefined) S.prefs.soloIT = true;              // solo ciò che si vede in Italia
+if (S.prefs.soloItaliano === undefined) S.prefs.soloItaliano = true;  // solo con testi in italiano
 const persist = () => { lsSet('cp_saved',S.saved); lsSet('cp_seen',S.seen); lsSet('cp_loved',S.loved); lsSet('cp_prefs',S.prefs); };
 
 /* =======================================================================
@@ -571,6 +583,11 @@ function viewPrefs(){
     <h3>Sorgente dei titoli</h3>
     <p class="hint">Con una chiave TMDB l'app scarica da sola le uscite recenti con voto alto, il meglio degli ultimi anni, le locandine ufficiali e la disponibilità in Italia. La chiave è gratuita, resta su questo telefono e non finisce nel repository.</p>
     <input class="key-in" id="tmdbKey" type="text" inputmode="latin" spellcheck="false" autocomplete="off" placeholder="Incolla qui la chiave TMDB" value="${esc(S.prefs.tmdb)}">
+    <div class="line"><span>Solo ciò che si vede in Italia</span>
+      <button class="sw ${S.prefs.soloIT?'on':''}" data-flag="soloIT" role="switch" aria-checked="${S.prefs.soloIT}"><i></i></button></div>
+    <div class="line"><span>Solo con titolo e trama in italiano</span>
+      <button class="sw ${S.prefs.soloItaliano?'on':''}" data-flag="soloItaliano" role="switch" aria-checked="${S.prefs.soloItaliano}"><i></i></button></div>
+    <p class="hint" style="margin-top:10px">Se il catalogo ti sembra troppo povero, spegni il secondo: molti titoli buoni non hanno ancora la trama tradotta.</p>
     <div class="stat">
       <span>Stato <b>${isLive() ? 'catalogo dal vivo' : 'elenco di esempio'}</b></span>
       <span>Titoli <b>${total}</b></span>
@@ -711,7 +728,7 @@ window.addEventListener('hashchange', readHash);
 
 /* un solo gestore per tutti i tocchi: niente più pulsanti che smettono di funzionare */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-open],[data-go],[data-tab],[data-kind],[data-mine],[data-service],[data-act],#more');
+  const t = e.target.closest('[data-open],[data-go],[data-tab],[data-kind],[data-mine],[data-service],[data-flag],[data-act],#more');
   if (!t) return;
 
   if (t.dataset.open) return openSheet(t.dataset.open);
@@ -721,6 +738,15 @@ document.addEventListener('click', e => {
   if (t.dataset.mine) { S.mineTab = t.dataset.mine; return viewMine(); }
   if (t.id === 'more'){ S.chartShown += 30; return viewChart(); }
 
+  if (t.dataset.flag){
+    const f = t.dataset.flag;
+    S.prefs[f] = !S.prefs[f];
+    persist();
+    t.classList.toggle('on', S.prefs[f]);
+    t.setAttribute('aria-checked', S.prefs[f]);
+    sync(true);
+    return;
+  }
   if (t.dataset.service){
     const n = t.dataset.service;
     S.prefs.services[n] = !S.prefs.services[n];
