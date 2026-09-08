@@ -60,3 +60,17 @@ Per installarla su iPhone serve pubblicarla via HTTPS (GitHub Pages, Cloudflare 
 ## Privacy
 
 Lista, visti, preferiti e impostazioni vengono salvati in `localStorage` nella versione demo. Non sono presenti account o login.
+
+## GitHub Pages — deployment corretto
+
+Il progetto include `.github/workflows/pages.yml`, un workflow Pages controllato dal repository.
+
+1. Carica tutto il contenuto della cartella `cinema-pulse` nel repository.
+2. Assicurati che il branch principale sia `main`.
+3. Vai in **Settings → Pages**.
+4. In **Build and deployment → Source**, seleziona **GitHub Actions**.
+5. Vai in **Actions** e avvia `Deploy Cinema Pulse to GitHub Pages` con **Run workflow** se necessario.
+
+Il workflow usa le versioni correnti delle action Pages indicate dalla documentazione GitHub e non richiede Node.js/npm per questa PWA statica. `cancel-in-progress: false` evita di cancellare una distribuzione già in corso quando vengono fatti più push ravvicinati.
+
+Se avevi attivato in precedenza il workflow Pages generato automaticamente da GitHub, dopo aver impostato la sorgente su **GitHub Actions** usa il workflow incluso nel progetto e non quello generato automaticamente.
