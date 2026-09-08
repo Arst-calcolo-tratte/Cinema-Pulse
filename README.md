@@ -1,47 +1,62 @@
-# Cinema Pulse — v1.0
+# Cinema Pulse v1.1
 
-Web app/PWA privata per scoprire novità di film e serie, classificarle e salvare titoli da vedere.
+Web app / PWA privata per scoprire novità streaming, classificare film e serie, cercare nell'archivio, gestire una lista personale e aprire la scheda completa di ogni titolo.
 
-## Cosa include
-- Home cinematografica responsive
-- Classifica con filtri Film/Serie e 1/7/30 giorni
-- Scheda titolo con trama, IMDb, Pulse Score e disponibilità
-- Ricerca istantanea
-- La mia lista / Visti
-- Impostazioni piattaforme
-- Pulsante **Aggiorna** con stato di sincronizzazione
-- Service Worker / PWA / installabile su iPhone
-- Dati e liste demo salvati localmente
-- Icona Cinema Pulse originale in `assets/icon.svg`
+## Cosa è stato corretto in v1.1
 
-## Importante: dati reali e aggiornamento automatico
-La UI è completa e pronta per il collegamento a fonti dati reali, ma **non contiene credenziali/API proprietarie** e non esegue scraping di Netflix/Prime. In produzione va collegato un backend che utilizzi fonti/API autorizzate per:
-1. cataloghi e disponibilità streaming in Italia;
-2. metadata dei titoli;
-3. rating IMDb o dataset/licenze compatibili;
-4. eventuali rating della critica.
+- Navigazione inferiore più leggibile su iPhone: icone e testi più grandi, contrasto e area touch migliorati.
+- Pulsanti e link dinamici funzionanti anche dopo il rendering di una nuova pagina.
+- Pulsante "Torna alla pagina precedente" nella scheda titolo.
+- Ricerca senza perdita del focus durante la digitazione.
+- Tutte le card sono cliccabili e aprono la scheda completa.
+- I pulsanti "Guarda" aprono destinazioni esterne legali/ufficiali o JustWatch per verificare la disponibilità.
+- La classifica **Novità** mostra solo titoli aggiunti negli ultimi 30 giorni: non confonde più l'anno di uscita del film con la data di ingresso nel catalogo.
+- Aggiunta la modalità **Archivio 5 anni+**, con un catalogo demo ampio e filtri Film / Serie TV.
+- Ricerca estesa a tutto l'archivio, non solo alle novità.
+- Aggiunto "La mia lista" con tab Da vedere / Visti / Preferiti.
+- Aggiunti poster locali demo per evitare una griglia vuota o immagini rotte in assenza di rete.
+- PWA migliorata con icone PNG 192/512 e Apple Touch Icon.
+- Service worker aggiornato a v2 e pronto a sostituire la cache precedente.
 
-Il frontend è predisposto per sostituire `DEMO` in `app.js` con una risposta JSON del backend. Un esempio di contratto:
+## Struttura
 
-`GET /api/catalog?country=IT&services=netflix,prime`
+- `index.html` — shell della PWA
+- `styles.css` — design system responsive
+- `app.js` — navigazione, catalogo demo, ranking, ricerca, lista, preferiti e refresh
+- `manifest.webmanifest` — installazione PWA
+- `sw.js` — cache/offline base
+- `assets/icon.svg` — icona vettoriale
+- `assets/icon-192.png` / `icon-512.png` — icone PWA
+- `assets/apple-touch-icon.png` — icona iPhone
+- `assets/posters/` — poster demo locali
 
-che restituisce un array con `id,title,type,year,date,genres,runtime,imdb,pulse,platforms,free,desc,poster`.
+## Dati reali e aggiornamento automatico
 
-Il backend dovrebbe inoltre mantenere un `lastUpdated` e un delta di nuovi/aggiornati/rimossi titoli. Il pulsante Aggiorna deve richiamare l'endpoint e sostituire/mergeare i dati. L'aggiornamento in background su iOS/browser è best-effort; per un vero aggiornamento automatico affidabile conviene far eseguire la sincronizzazione sul server a intervalli regolari e notificare l'app quando torna online.
+La v1.1 è una UI/prototipo funzionale con catalogo demo volutamente ampio. Il pulsante **Aggiorna** simula il controllo e aggiorna il timestamp locale.
+
+Per il prodotto finale, il passo successivo è collegare un backend a fonti/API autorizzate per:
+
+1. nuove aggiunte di Netflix e Prime Video in Italia;
+2. disponibilità su altri servizi;
+3. rating IMDb e metadati;
+4. eventuali punteggi di critica professionale;
+5. sincronizzazione automatica e deduplicazione;
+6. link ufficiali alle piattaforme legali.
+
+L'app è già strutturata per sostituire `DEMO` con una risposta JSON del backend senza rifare l'interfaccia.
 
 ## Avvio locale
-Può essere pubblicata direttamente su GitHub Pages per la UI demo. Per il Service Worker serve HTTPS oppure localhost.
 
-Con Node:
+Aprire la cartella con un server HTTP, ad esempio:
 
 ```bash
-npx serve .
+python3 -m http.server 8080
 ```
 
-poi aprire l'indirizzo mostrato.
+Poi visitare `http://localhost:8080`.
 
-## GitHub
-Caricare l'intera cartella del progetto. Se si usa GitHub Pages, impostare la pubblicazione dalla branch principale e dalla root del repository.
+Per installarla su iPhone serve pubblicarla via HTTPS (GitHub Pages, Cloudflare Pages, Vercel, Netlify o hosting equivalente).
 
 ## Privacy
-La demo salva lista e preferenze in `localStorage`. Nessun account è richiesto. Per la produzione, se si aggiunge un backend, documentare chiaramente quali dati vengono inviati e mantenere le preferenze locali quando possibile.
+
+Lista, visti, preferiti e impostazioni vengono salvati in `localStorage` nella versione demo. Non sono presenti account o login.
